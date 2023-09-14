@@ -9,3 +9,76 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            String     @id @default(uuid())
+  email         String     @unique
+  name          String
+  year          Int
+  password      String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  months        Month[]    @relation("userMonth")
+  role          Role       @default(USER)
+  payments      Payments[]
+  expenses      Expense[]
+  messSecretary Month[]    @relation("messSecretary")
+}
+
+model Month {
+  id              String      @id @default(uuid())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  startDate       DateTime    @default(now())
+  endDate         DateTime
+  feastDate       DateTime?
+  messFee         Float       @default(3000)
+  messCutCharge   Float
+  messSecretaries User[]      @relation("messSecretary")
+  users           User[]      @relation("userMonth")
+  expenses        Expense[]
+  payments        Payments[]
+  messBreaks      messBreak[]
+}
+
+model Expense {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Purpose   String
+  amount    Float
+  monthId   String
+  feast     Boolean?
+  month     Month    @relation(fields: [monthId], references: [id])
+  payedById String
+  payedBy   User     @relation(fields: [payedById], references: [id])
+}
+
+model Payments {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  amount        Float
+  monthId       String
+  month         Month    @relation(fields: [monthId], references: [id])
+  transactionID Int
+}
+
+model messBreak {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reason    String
+  startDate DateTime
+  endDate   DateTime
+  monthId   String
+  month     Month    @relation(fields: [monthId], references: [id])
+}
+
+enum Role {
+  ADMIN
+  USER
+  COOK
+}
