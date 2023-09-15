@@ -14,6 +14,7 @@ model User {
   id            String     @id @default(uuid())
   email         String     @unique
   name          String
+  branch        Branch
   year          Int
   password      String
   createdAt     DateTime   @default(now())
@@ -23,10 +24,11 @@ model User {
   payments      Payments[]
   expenses      Expense[]
   messSecretary Month[]    @relation("messSecretary")
+  refunds       Refunds[]
 }
 
 model Month {
-  id              String      @id @default(uuid())
+  id              Int         @id @default(autoincrement())
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   startDate       DateTime    @default(now())
@@ -39,6 +41,7 @@ model Month {
   expenses        Expense[]
   payments        Payments[]
   messBreaks      messBreak[]
+  refunds         Refunds[]
 }
 
 model Expense {
@@ -47,8 +50,8 @@ model Expense {
   updatedAt DateTime @updatedAt
   Purpose   String
   amount    Float
-  monthId   String
   feast     Boolean?
+  monthId   Int
   month     Month    @relation(fields: [monthId], references: [id])
   payedById String
   payedBy   User     @relation(fields: [payedById], references: [id])
@@ -61,9 +64,20 @@ model Payments {
   userId        String
   user          User     @relation(fields: [userId], references: [id])
   amount        Float
-  monthId       String
+  monthId       Int
   month         Month    @relation(fields: [monthId], references: [id])
   transactionID Int
+}
+
+model Refunds {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Float
+  monthId   Int
+  month     Month    @relation(fields: [monthId], references: [id])
 }
 
 model messBreak {
@@ -73,12 +87,24 @@ model messBreak {
   reason    String
   startDate DateTime
   endDate   DateTime
-  monthId   String
+  monthId   Int
   month     Month    @relation(fields: [monthId], references: [id])
 }
 
 enum Role {
   ADMIN
+  SEC
   USER
   COOK
+}
+
+enum Branch {
+  CSE
+  EEE
+  ECE
+  ME
+  CE
+  AIE
+  IE
+  Arch
 }
