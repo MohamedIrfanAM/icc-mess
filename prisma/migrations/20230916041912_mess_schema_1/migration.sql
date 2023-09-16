@@ -1,11 +1,12 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER', 'COOK');
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'SEC', 'USER', 'COOK');
 
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
+    "department" TEXT NOT NULL,
     "year" INTEGER NOT NULL,
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -17,7 +18,7 @@ CREATE TABLE "User" (
 
 -- CreateTable
 CREATE TABLE "Month" (
-    "id" TEXT NOT NULL,
+    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,8 +37,8 @@ CREATE TABLE "Expense" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "Purpose" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
-    "monthId" TEXT NOT NULL,
     "feast" BOOLEAN,
+    "monthId" INTEGER NOT NULL,
     "payedById" TEXT NOT NULL,
 
     CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
@@ -50,10 +51,22 @@ CREATE TABLE "Payments" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
-    "monthId" TEXT NOT NULL,
+    "monthId" INTEGER NOT NULL,
     "transactionID" INTEGER NOT NULL,
 
     CONSTRAINT "Payments_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Refunds" (
+    "id" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "monthId" INTEGER NOT NULL,
+
+    CONSTRAINT "Refunds_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -64,20 +77,20 @@ CREATE TABLE "messBreak" (
     "reason" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
-    "monthId" TEXT NOT NULL,
+    "monthId" INTEGER NOT NULL,
 
     CONSTRAINT "messBreak_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "_messSecretary" (
-    "A" TEXT NOT NULL,
+    "A" INTEGER NOT NULL,
     "B" TEXT NOT NULL
 );
 
 -- CreateTable
 CREATE TABLE "_userMonth" (
-    "A" TEXT NOT NULL,
+    "A" INTEGER NOT NULL,
     "B" TEXT NOT NULL
 );
 
@@ -107,6 +120,12 @@ ALTER TABLE "Payments" ADD CONSTRAINT "Payments_userId_fkey" FOREIGN KEY ("userI
 
 -- AddForeignKey
 ALTER TABLE "Payments" ADD CONSTRAINT "Payments_monthId_fkey" FOREIGN KEY ("monthId") REFERENCES "Month"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Refunds" ADD CONSTRAINT "Refunds_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Refunds" ADD CONSTRAINT "Refunds_monthId_fkey" FOREIGN KEY ("monthId") REFERENCES "Month"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "messBreak" ADD CONSTRAINT "messBreak_monthId_fkey" FOREIGN KEY ("monthId") REFERENCES "Month"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

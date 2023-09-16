@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import Link from "next/link"
 import * as z from "zod"
+import axios from "axios"
  
 import { Button } from "@/components/ui/button"
 import {
@@ -52,17 +53,19 @@ export default function InputForm() {
     resolver: zodResolver(FormSchema),
   })
  
-  function onSubmit(data) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  async function onSubmit(data) {
+    await axios.post('api/register',JSON.stringify(data)).then((res) => {
+      if(res.status == 201){
+        toast({title: "Account Created", description: "Your account has been created successfully"})
+      }
+      else if(res.status == 208){
+        form.setError('email', { type: 'custom', message: 'Email already registered'}, { shouldFocus: true });
+      }
+    }).catch((err) => {
+      toast({title: "Error", description: "Something went wrong"})
     })
-  }
- 
+  } 
+
   return (
     <div className="flex flex-col items-center h-full justify-center gap-6 p-3">
       <h1 className="text-5xl">ICC MESS</h1>

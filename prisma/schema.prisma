@@ -14,7 +14,7 @@ model User {
   id            String     @id @default(uuid())
   email         String     @unique
   name          String
-  branch        Branch
+  department    String
   year          Int
   password      String
   createdAt     DateTime   @default(now())
@@ -96,15 +96,4 @@ enum Role {
   SEC
   USER
   COOK
-}
-
-enum Branch {
-  CSE
-  EEE
-  ECE
-  ME
-  CE
-  AIE
-  IE
-  Arch
 }
