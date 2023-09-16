@@ -12,8 +12,11 @@ export async function POST(req){
           email: email
         },
     })
-    if(user) {
+    if(user && user.activated) {
       return new NextResponse(JSON.stringify({message:"User already exists"}),{status: 208})
+    }
+    else if(user && !user.activated){
+      return new NextResponse(JSON.stringify({message:"User already exists but not activated"}),{status: 207})
     }
     //Create user
     await prisma.user.create({

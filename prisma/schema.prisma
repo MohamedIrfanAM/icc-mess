@@ -11,20 +11,23 @@ datasource db {
 }
 
 model User {
-  id            String     @id @default(uuid())
-  email         String     @unique
-  name          String
-  department    String
-  year          Int
-  password      String
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  months        Month[]    @relation("userMonth")
-  role          Role       @default(USER)
-  payments      Payments[]
-  expenses      Expense[]
-  messSecretary Month[]    @relation("messSecretary")
-  refunds       Refunds[]
+  id               String     @id @default(uuid())
+  email            String     @unique
+  name             String
+  department       String
+  year             Int
+  password         String
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  months           Month[]    @relation("userMonth")
+  role             Role       @default(USER)
+  payments         Payments[]
+  expenses         Expense[]
+  messSecretary    Month[]    @relation("messSecretary")
+  refunds          Refunds[]
+  activated        Boolean    @default(false)
+  activationKey    String?
+  activationSentAt DateTime?
 }
 
 model Month {
