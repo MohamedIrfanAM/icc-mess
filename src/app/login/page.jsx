@@ -8,6 +8,7 @@ import axios from "axios"
 import { useState } from "react"
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from "react"
+import { signIn } from 'next-auth/react' 
  
 import { Button } from "@/components/ui/button"
 import {
@@ -58,6 +59,27 @@ export default function InputForm() {
   },[])
 
   async function onSubmit(data) {
+    const res = await signIn('credentials', {
+      email: data.email,
+      password: data.password,
+      redirect:false
+    })
+    if(!res.error){
+      toast({title: "Login Successfull", description: "Redirecting to dashboard"})
+      router.push('/')
+    }
+    if(res.error == "Invalid Email") {
+      form.setError('email', { type: 'custom', message: 'No account found for this email address'}, { shouldFocus: true });
+    }
+    else if(res.error == "Invalid Password") {
+      form.setError('password', { type: 'custom', message: 'Incorrect password'}, { shouldFocus: true });
+    }
+    else if(res.error == 'Not Activated'){
+      toast({title: "Error", description: "Account found, but not activated.Please check you mail to activate your account"})
+    }
+    else if(res.error){
+      toast({title: "Error", description: "Something went wrong, please try again"})
+    }
   } 
 
   return (
