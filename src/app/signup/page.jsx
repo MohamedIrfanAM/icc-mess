@@ -199,7 +199,7 @@ export default function InputForm() {
               <Button type="submit">Submit</Button>
             </form>
           </Form>
-          <Link href={'/'} className="text-sm">Already have an account?<span className="underline">log in</span></Link>
+          <Link href={'/login'} className="text-sm">Already have an account?<span className="underline">log in</span></Link>
         </div>
       </div>
     </>

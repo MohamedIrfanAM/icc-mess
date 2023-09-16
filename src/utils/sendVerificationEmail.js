@@ -14,7 +14,7 @@ export const sendVerificationEmail = async (email) => {
         activationSentAt: new Date()
       }
     })
-    await sendEmail(email,`http://${process.env.NEXT_PUBLIC_HOSTNAME}/api/verifyEmail/${activationKey}`)
+    await sendEmail(email,`http://${process.env.NEXT_PUBLIC_HOSTNAME}/login?email=${email}&token=${activationKey}`)
   }
   catch(error){
     console.log(error)
