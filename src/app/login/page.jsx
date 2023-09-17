@@ -8,7 +8,7 @@ import axios from "axios"
 import { useState } from "react"
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from "react"
-import { signIn } from 'next-auth/react' 
+import { signIn, useSession } from 'next-auth/react' 
  
 import { Button } from "@/components/ui/button"
 import {
@@ -35,16 +35,20 @@ const FormSchema = z.object({
 
 export default function InputForm() {
 
+  const router = useRouter()
   const [openVerifyEmailDialog,setOpenVerifyEmailDialog] = useState(false)
+  const {status} = useSession()
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
   })
 
+  // Verify email if email and token is present in url
   const searchParams = useSearchParams();
   let urlEmail = searchParams.get('email');
   let token = searchParams.get('token');
-  const router = useRouter()
+  let callBackUrl = searchParams.get('callbackUrl');
+
   useEffect(() => {
     if(urlEmail != null && token != null) {
       axios.post('api/verifyEmail',JSON.stringify({email:urlEmail,token:token})).then(async (res) => {
@@ -56,7 +60,18 @@ export default function InputForm() {
         toast({title: "Error", description: "Invalid verification link,please try again"})
       })
     }
+    else if(callBackUrl != null) {
+      return toast({title: "Authentication Required", description: "Please log in to continue"})
+      console.log(callBackUrl)
+    }
   },[])
+
+  // Redirect to dashboard if already logged in
+  if(status == 'loading') return <div>Loading...</div>
+  else if(status == 'authenticated' && urlEmail == null && token == null && callBackUrl == null) {
+    router.push('/');
+    return <div>Redirecting...</div>
+  }
 
   async function onSubmit(data) {
     const res = await signIn('credentials', {
@@ -66,7 +81,8 @@ export default function InputForm() {
     })
     if(!res.error){
       toast({title: "Login Successfull", description: "Redirecting to dashboard"})
-      router.push('/')
+      if(callBackUrl != null) router.push(callBackUrl)
+      else router.push('/')
     }
     if(res.error == "Invalid Email") {
       form.setError('email', { type: 'custom', message: 'No account found for this email address'}, { shouldFocus: true });
