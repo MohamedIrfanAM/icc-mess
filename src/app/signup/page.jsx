@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 import { Select,SelectTrigger,SelectValue,SelectContent,SelectItem } from "@/components/ui/select"
 import { DialogBox } from "@/components/verifyEmailDialog"
+import { Toaster } from "@/components/ui/toaster"
  
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -58,6 +59,14 @@ export default function InputForm() {
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
+    defaultValues:{
+      name:'',
+      email:'',
+      department:'',
+      year:'',
+      password:'',
+      confirmPassword:''
+    }
   })
  
   async function onSubmit(data) {
@@ -87,7 +96,7 @@ export default function InputForm() {
       <DialogBox email={email} open={openVerifyEmailDialog} onOpenChange={setOpenVerifyEmailDialog}/>
       <div className="flex flex-col items-center h-full justify-center gap-6 p-3">
         <h1 className="text-5xl">ICC MESS</h1>
-        <div className="w-[min(100%,450px)] flex flex-col items-center border border-3 border-black p-2 space-y-2">
+        <div className="w-[min(100%,450px)] flex flex-col items-center border border-3 border-black p-2 space-y-2 rounded-lg">
           <h1 className="text-black text-2xl">SignUp</h1>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-3/4 space-y-4">
@@ -199,9 +208,10 @@ export default function InputForm() {
               <Button type="submit">Submit</Button>
             </form>
           </Form>
-          <Link href={'/login'} className="text-sm">Already have an account?<span className="underline">log in</span></Link>
+          <Link href={'/login'} className="text-sm pb-1">Already have an account?<span className="underline">log in</span></Link>
         </div>
       </div>
+      <Toaster/>
     </>
   )
 }

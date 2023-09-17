@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 import { DialogBox } from "@/components/verifyEmailDialog"
 import { useRouter } from "next/navigation"
+import { Toaster } from "@/components/ui/toaster"
  
 const FormSchema = z.object({
   email: z.string().email({
@@ -41,6 +42,14 @@ export default function InputForm() {
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
+    defaultValues:{
+      name:'',
+      email:'',
+      department:'',
+      year:'',
+      password:'',
+      confirmPassword:''
+    }
   })
 
   // Verify email if email and token is present in url
@@ -61,8 +70,7 @@ export default function InputForm() {
       })
     }
     else if(callBackUrl != null) {
-      return toast({title: "Authentication Required", description: "Please log in to continue"})
-      console.log(callBackUrl)
+      toast({title: "Authentication Required", description: "Please log in to continue"})
     }
   },[])
 
@@ -103,7 +111,7 @@ export default function InputForm() {
       <DialogBox open={openVerifyEmailDialog} onOpenChange={setOpenVerifyEmailDialog}/>
       <div className="flex flex-col items-center h-full justify-center gap-6 p-3">
         <h1 className="text-5xl">ICC MESS</h1>
-        <div className="w-[min(100%,450px)] flex flex-col items-center border border-3 border-black p-2 space-y-2">
+        <div className="w-[min(100%,450px)] flex flex-col items-center border border-3 border-black p-2 space-y-2 rounded-lg">
           <h1 className="text-black text-2xl">Login</h1>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-3/4 space-y-4">
@@ -136,9 +144,10 @@ export default function InputForm() {
               <Button type="submit">Login</Button>
             </form>
           </Form>
-          <Link href={'/signup'} className="text-sm">Don't have an account?<span className="underline">Sign up</span></Link>
+          <Link href={'/signup'} className="text-sm pb-1">Don't have an account?<span className="underline">Sign up</span></Link>
         </div>
       </div>
+      <Toaster/>
     </>
   )
 }
